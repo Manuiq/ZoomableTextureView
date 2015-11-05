@@ -64,10 +64,7 @@ public class ZoomableTextureView extends TextureView {
     }
 
     private void initView(){
-        m = new float[9];
         setOnTouchListener(new ZoomOnTouchListeners());
-        mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
-
     }
 
     public void updateVideoDimens(int height, int width){
@@ -257,118 +254,5 @@ public class ZoomableTextureView extends TextureView {
             }
         }
     }
-
-
-
-    private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener
-    {
-
-        @Override
-        public boolean onScaleBegin(ScaleGestureDetector detector)
-        {
-            mode = ZOOM;
-            return true;
-        }
-
-        @Override
-        public boolean onScale(ScaleGestureDetector detector)
-        {
-
-            float mScaleFactor = detector.getScaleFactor();
-            float origScale = saveScale;
-            saveScale *= mScaleFactor;
-            if (saveScale > maxScale)
-            {
-                saveScale = maxScale;
-                mScaleFactor = maxScale / origScale;
-            }
-            else if (saveScale < minScale)
-            {
-                saveScale = minScale;
-                mScaleFactor = minScale / origScale;
-            }
-            right = width * saveScale - width - (2 * redundantXSpace * saveScale);
-            bottom = height * saveScale - height - (2 * redundantYSpace * saveScale);
-            if (origWidth * saveScale <= width || origHeight * saveScale <= height)
-            {
-                matrix.postScale(mScaleFactor, mScaleFactor, width / 2, height / 2);
-                if (mScaleFactor < 1)
-                {
-                    matrix.getValues(m);
-                    float x = m[Matrix.MTRANS_X];
-                    float y = m[Matrix.MTRANS_Y];
-                    if (mScaleFactor < 1)
-                    {
-                        if (Math.round(origWidth * saveScale) < width)
-                        {
-                            if (y < -bottom)
-                                matrix.postTranslate(0, -(y + bottom));
-                            else if (y > 0)
-                                matrix.postTranslate(0, -y);
-                        }
-                        else
-                        {
-                            if (x < -right)
-                                matrix.postTranslate(-(x + right), 0);
-                            else if (x > 0)
-                                matrix.postTranslate(-x, 0);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                matrix.postScale(mScaleFactor, mScaleFactor, detector.getFocusX(), detector.getFocusY());
-                matrix.getValues(m);
-                float x = m[Matrix.MTRANS_X];
-                float y = m[Matrix.MTRANS_Y];
-                if (mScaleFactor < 1) {
-                    if (x < -right)
-                        matrix.postTranslate(-(x + right), 0);
-                    else if (x > 0)
-                        matrix.postTranslate(-x, 0);
-                    if (y < -bottom)
-                        matrix.postTranslate(0, -(y + bottom));
-                    else if (y > 0)
-                        matrix.postTranslate(0, -y);
-                }
-            }
-            return true;
-        }
-    }
-
-    @Override
-    protected void onMeasure (int widthMeasureSpec, int heightMeasureSpec)
-    {
-
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
-        width = MeasureSpec.getSize(widthMeasureSpec);
-        height = MeasureSpec.getSize(heightMeasureSpec);
-        //Fit to screen.
-        float scale;
-        float scaleX =  width / bmWidth;
-        float scaleY = height / bmHeight;
-        scale = Math.min(scaleX, scaleY);
-        matrix.setScale(scale, scale);
-        //setImageMatrix(matrix);
-        setTransform(matrix);
-        saveScale = 1f;
-
-        // Center the image
-        redundantYSpace = height - (scale * bmHeight) ;
-        redundantXSpace = width - (scale * bmWidth);
-        redundantYSpace /= 2;
-        redundantXSpace /= 2;
-
-        matrix.postTranslate(redundantXSpace, redundantYSpace);
-
-        origWidth = width - 2 * redundantXSpace;
-        origHeight = height - 2 * redundantYSpace;
-        right = width * saveScale - width - (2 * redundantXSpace * saveScale);
-        bottom = height * saveScale - height - (2 * redundantYSpace * saveScale);
-        setTransform(matrix);
-    }
-
 
 }
