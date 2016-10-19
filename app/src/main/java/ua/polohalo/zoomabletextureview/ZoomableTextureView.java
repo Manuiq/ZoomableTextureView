@@ -3,6 +3,8 @@ package ua.polohalo.zoomabletextureview;
 import android.content.Context;
 import android.graphics.Matrix;
 import android.graphics.PointF;
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -10,39 +12,46 @@ import android.view.ScaleGestureDetector;
 import android.view.TextureView;
 import android.view.View;
 
-/**
- * Created by mac on 8/24/15.
- */
 public class ZoomableTextureView extends TextureView {
 
-    Context context;
+    private Context context;
+
+    private float minScale = 1f;
+    private float maxScale = 5f;
+    private float saveScale = 1f;
+
+    public void setMinScale(float scale) {
+        if (scale < 1.0f || scale > maxScale)
+            throw new RuntimeException("minScale can't be lower than 1 or larger than maxScale(" + maxScale + ")");
+        else minScale = scale;
+    }
+
+    public void setMaxScale(float scale) {
+        if (scale < 1.0f || scale < minScale)
+            throw new RuntimeException("maxScale can't be lower than 1 or minScale(" + minScale + ")");
+        else minScale = scale;
+    }
 
 
+    private static final int NONE = 0;
+    private static final int DRAG = 1;
+    private static final int ZOOM = 2;
+    private int mode = NONE;
+
+    private Matrix matrix = new Matrix();
+
+    private ScaleGestureDetector mScaleDetector;
 
 
-    static final int NONE = 0;
-    static final int DRAG = 1;
-    static final int ZOOM = 2;
-    static final int CLICK = 3;
-    int mode = NONE;
-
-    Matrix matrix = new Matrix();
-
-    ScaleGestureDetector mScaleDetector;
-
-    float minScale = 1f;
-    float maxScale = 5f;
-    float[] m;
+    private float[] m;
 
 
-    PointF last = new PointF();
-    PointF start = new PointF();
+    private PointF last = new PointF();
+    private PointF start = new PointF();
 
 
-    float redundantXSpace, redundantYSpace;
-    float width, height;
-    float saveScale = 1f;
-    float right, bottom, origWidth, origHeight, bmWidth, bmHeight;
+    private float width, height;
+    private float right, bottom, origWidth, origHeight;
 
 
     public ZoomableTextureView(Context context) {
@@ -63,30 +72,43 @@ public class ZoomableTextureView extends TextureView {
         initView();
     }
 
-    private void initView(){
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("superState", super.onSaveInstanceState());
+        bundle.putFloat("minScale", minScale);
+        bundle.putFloat("maxScale", maxScale);
+        return bundle;
+
+    }
+
+    @Override
+    public void onRestoreInstanceState(Parcelable state) {
+        if (state instanceof Bundle) {
+            Bundle bundle = (Bundle) state;
+            this.minScale = bundle.getInt("minScale");
+            this.minScale = bundle.getInt("maxScale");
+            state = bundle.getParcelable("superState");
+        }
+        super.onRestoreInstanceState(state);
+    }
+
+    private void initView() {
         setOnTouchListener(new ZoomOnTouchListeners());
     }
 
-    public void updateVideoDimens(int height, int width){
+    public void updateVideoDimens(int height, int width) {
         this.height = height;
         this.width = width;
-        this.bmHeight = height;
-        this.bmWidth = width;
     }
 
     private class ZoomOnTouchListeners implements View.OnTouchListener {
-
-
-
-
-        public ZoomOnTouchListeners(){
+        public ZoomOnTouchListeners() {
             super();
             m = new float[9];
-            mScaleDetector= new ScaleGestureDetector(context, new ScaleListener());
+            mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
 
         }
-
-
 
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -120,8 +142,7 @@ public class ZoomableTextureView extends TextureView {
                 case MotionEvent.ACTION_MOVE:
                     //if the mode is ZOOM or
                     //if the mode is DRAG and already zoomed
-                    if (mode == ZOOM || (mode == DRAG && saveScale > minScale))
-                    {
+                    if (mode == ZOOM || (mode == DRAG && saveScale > minScale)) {
                         float deltaX = curr.x - last.x;// x difference
                         float deltaY = curr.y - last.y;// y difference
                         float scaleWidth = Math.round(origWidth * saveScale);// width after applying current scale
@@ -129,8 +150,7 @@ public class ZoomableTextureView extends TextureView {
                         //if scaleWidth is smaller than the views width
                         //in other words if the image width fits in the view
                         //limit left and right movement
-                        if (scaleWidth < width)
-                        {
+                        if (scaleWidth < width) {
                             deltaX = 0;
                             if (y + deltaY > 0)
                                 deltaY = -y;
@@ -140,8 +160,7 @@ public class ZoomableTextureView extends TextureView {
                         //if scaleHeight is smaller than the views height
                         //in other words if the image height fits in the view
                         //limit up and down movement
-                        else if (scaleHeight < height)
-                        {
+                        else if (scaleHeight < height) {
                             deltaY = 0;
                             if (x + deltaX > 0)
                                 deltaX = -x;
@@ -150,8 +169,7 @@ public class ZoomableTextureView extends TextureView {
                         }
                         //if the image doesnt fit in the width or height
                         //limit both up and down and left and right
-                        else
-                        {
+                        else {
                             if (x + deltaX > 0)
                                 deltaX = -x;
                             else if (x + deltaX < -right)
@@ -178,53 +196,41 @@ public class ZoomableTextureView extends TextureView {
             return true;
         }
 
-        private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener
-        {
+        private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
 
             @Override
-            public boolean onScaleBegin(ScaleGestureDetector detector)
-            {
+            public boolean onScaleBegin(ScaleGestureDetector detector) {
                 mode = ZOOM;
                 return true;
             }
 
             @Override
-            public boolean onScale(ScaleGestureDetector detector)
-            {
+            public boolean onScale(ScaleGestureDetector detector) {
                 float mScaleFactor = detector.getScaleFactor();
                 float origScale = saveScale;
                 saveScale *= mScaleFactor;
-                if (saveScale > maxScale)
-                {
+                if (saveScale > maxScale) {
                     saveScale = maxScale;
                     mScaleFactor = maxScale / origScale;
-                }
-                else if (saveScale < minScale)
-                {
+                } else if (saveScale < minScale) {
                     saveScale = minScale;
                     mScaleFactor = minScale / origScale;
                 }
-                right = width * saveScale - width - (2 * redundantXSpace * saveScale);
-                bottom = height * saveScale - height - (2 * redundantYSpace * saveScale);
-                if (origWidth * saveScale <= width || origHeight * saveScale <= height)
-                {
+                right = width * saveScale - width;
+                bottom = height * saveScale - height;
+                if (origWidth * saveScale <= width || origHeight * saveScale <= height) {
                     matrix.postScale(mScaleFactor, mScaleFactor, width / 2, height / 2);
-                    if (mScaleFactor < 1)
-                    {
+                    if (mScaleFactor < 1) {
                         matrix.getValues(m);
                         float x = m[Matrix.MTRANS_X];
                         float y = m[Matrix.MTRANS_Y];
-                        if (mScaleFactor < 1)
-                        {
-                            if (Math.round(origWidth * saveScale) < width)
-                            {
+                        if (mScaleFactor < 1) {
+                            if (Math.round(origWidth * saveScale) < width) {
                                 if (y < -bottom)
                                     matrix.postTranslate(0, -(y + bottom));
                                 else if (y > 0)
                                     matrix.postTranslate(0, -y);
-                            }
-                            else
-                            {
+                            } else {
                                 if (x < -right)
                                     matrix.postTranslate(-(x + right), 0);
                                 else if (x > 0)
@@ -232,9 +238,7 @@ public class ZoomableTextureView extends TextureView {
                             }
                         }
                     }
-                }
-                else
-                {
+                } else {
                     matrix.postScale(mScaleFactor, mScaleFactor, detector.getFocusX(), detector.getFocusY());
                     matrix.getValues(m);
                     float x = m[Matrix.MTRANS_X];
