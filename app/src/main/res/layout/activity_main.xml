@@ -1,7 +1,13 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".SampleActivity">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_margin="4dp"
+        android:text="@string/texture_view"
+        android:layout_gravity="center_horizontal"
+        android:layout_height="wrap_content" />
 
     <ua.polohalo.zoomabletextureview.ZoomableTextureView
         android:layout_width="match_parent"
@@ -10,4 +16,12 @@
     </ua.polohalo.zoomabletextureview.ZoomableTextureView>
 
 
-</RelativeLayout>
+
+    <ua.polohalo.zoomabletextureview.ZoomableSurfaceView
+        android:layout_width="match_parent"
+        android:id="@+id/surfaceView"
+        android:layout_height="match_parent">
+    </ua.polohalo.zoomabletextureview.ZoomableSurfaceView>
+
+
+</LinearLayout>

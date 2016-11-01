@@ -6,13 +6,15 @@ import android.graphics.PointF;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.TextureView;
 import android.view.View;
 
 public class ZoomableTextureView extends TextureView {
+    private static final String SUPERSTATE_KEY = "superState";
+    private static final String MIN_SCALE_KEY = "minScale";
+    private static final String MAX_SCALE_KEY = "maxScale";
 
     private Context context;
 
@@ -51,7 +53,7 @@ public class ZoomableTextureView extends TextureView {
 
 
     private float width, height;
-    private float right, bottom, origWidth, origHeight;
+    private float right, bottom;
 
 
     public ZoomableTextureView(Context context) {
@@ -75,9 +77,9 @@ public class ZoomableTextureView extends TextureView {
     @Override
     protected Parcelable onSaveInstanceState() {
         Bundle bundle = new Bundle();
-        bundle.putParcelable("superState", super.onSaveInstanceState());
-        bundle.putFloat("minScale", minScale);
-        bundle.putFloat("maxScale", maxScale);
+        bundle.putParcelable(SUPERSTATE_KEY, super.onSaveInstanceState());
+        bundle.putFloat(MIN_SCALE_KEY, minScale);
+        bundle.putFloat(MAX_SCALE_KEY, maxScale);
         return bundle;
 
     }
@@ -86,9 +88,9 @@ public class ZoomableTextureView extends TextureView {
     public void onRestoreInstanceState(Parcelable state) {
         if (state instanceof Bundle) {
             Bundle bundle = (Bundle) state;
-            this.minScale = bundle.getInt("minScale");
-            this.minScale = bundle.getInt("maxScale");
-            state = bundle.getParcelable("superState");
+            this.minScale = bundle.getInt(MIN_SCALE_KEY);
+            this.minScale = bundle.getInt(MAX_SCALE_KEY);
+            state = bundle.getParcelable(SUPERSTATE_KEY);
         }
         super.onRestoreInstanceState(state);
     }
@@ -129,10 +131,6 @@ public class ZoomableTextureView extends TextureView {
                     break;
                 case MotionEvent.ACTION_UP:
                     mode = NONE;
-                    int xDiff = (int) Math.abs(curr.x - start.x);
-                    int yDiff = (int) Math.abs(curr.y - start.y);
-                    //if (xDiff < CLICK && yDiff < CLICK)//TODO click event?
-                    // performClick();
                     break;
                 case MotionEvent.ACTION_POINTER_DOWN:
                     last.set(motionEvent.getX(), motionEvent.getY());
@@ -145,8 +143,8 @@ public class ZoomableTextureView extends TextureView {
                     if (mode == ZOOM || (mode == DRAG && saveScale > minScale)) {
                         float deltaX = curr.x - last.x;// x difference
                         float deltaY = curr.y - last.y;// y difference
-                        float scaleWidth = Math.round(origWidth * saveScale);// width after applying current scale
-                        float scaleHeight = Math.round(origHeight * saveScale);// height after applying current scale
+                        float scaleWidth = 0;// width after applying current scale
+                        float scaleHeight = 0;// height after applying current scale
                         //if scaleWidth is smaller than the views width
                         //in other words if the image width fits in the view
                         //limit left and right movement
@@ -218,14 +216,14 @@ public class ZoomableTextureView extends TextureView {
                 }
                 right = width * saveScale - width;
                 bottom = height * saveScale - height;
-                if (origWidth * saveScale <= width || origHeight * saveScale <= height) {
+                if (0 <= width || 0 <= height) {
                     matrix.postScale(mScaleFactor, mScaleFactor, width / 2, height / 2);
                     if (mScaleFactor < 1) {
                         matrix.getValues(m);
                         float x = m[Matrix.MTRANS_X];
                         float y = m[Matrix.MTRANS_Y];
                         if (mScaleFactor < 1) {
-                            if (Math.round(origWidth * saveScale) < width) {
+                            if (0 < width) {
                                 if (y < -bottom)
                                     matrix.postTranslate(0, -(y + bottom));
                                 else if (y > 0)
