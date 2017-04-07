@@ -4,4 +4,6 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="texture_view">TextureView</string>
+    <string name="exoplayer_sample">ExoPlayer sample</string>
+    <string name="mediaplayer_sample">MediaPlayer sample</string>
 </resources>

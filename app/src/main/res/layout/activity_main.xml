@@ -3,8 +3,20 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <ua.polohalo.zoomabletextureview.ZoomableTextureView
-        android:id="@+id/textureView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+    <Button
+        android:id="@+id/button_mediaplayer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="@dimen/activity_horizontal_margin"
+        android:text="@string/mediaplayer_sample" />
+
+    <Button
+        android:id="@+id/button_exoplayer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="@dimen/activity_horizontal_margin"
+        android:text="@string/exoplayer_sample" />
+
 </LinearLayout>
