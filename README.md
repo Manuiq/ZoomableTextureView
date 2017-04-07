@@ -1,4 +1,5 @@
-ZoomableTextureView extends TextureView to allow video playback with pinch to zoom and scroll features.
+ZoomableTextureView enables pinch to zoom and scroll gestures on video while it's playing.
+Can be used with MediaPlayer and the new ExoPlayer API.
 
 Inspired by similar implementation for ImageView http://stackoverflow.com/questions/6650398/android-imageview-zoom-in-and-zoom-out
-TODO: fix ugly code; aspect ratio calculation issue
+![](https://github.com/Manuiq/ZoomableTextureView/blob/master/example.gif)
