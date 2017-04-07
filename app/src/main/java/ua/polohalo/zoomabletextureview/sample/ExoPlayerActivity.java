@@ -1,7 +1,6 @@
-package ua.polohalo.zoomabletextureview;
+package ua.polohalo.zoomabletextureview.sample;
 
 import android.graphics.SurfaceTexture;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -24,6 +23,8 @@ import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
+
+import ua.polohalo.zoomabletextureview.ZoomableTextureView;
 
 public class ExoPlayerActivity extends AppCompatActivity implements TextureView.SurfaceTextureListener {
 

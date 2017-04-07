@@ -1,4 +1,4 @@
-package ua.polohalo.zoomabletextureview;
+package ua.polohalo.zoomabletextureview.sample;
 
 import android.graphics.SurfaceTexture;
 import android.media.MediaPlayer;
@@ -8,6 +8,9 @@ import android.view.Surface;
 import android.view.TextureView;
 
 import java.io.IOException;
+
+import ua.polohalo.zoomabletextureview.ZoomableTextureView;
+
 
 public class MediaPlayerActivity extends AppCompatActivity implements TextureView.SurfaceTextureListener, MediaPlayer.OnPreparedListener {
 
