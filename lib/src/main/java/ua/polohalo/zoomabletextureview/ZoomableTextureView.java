@@ -1,6 +1,7 @@
 package ua.polohalo.zoomabletextureview;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.os.Bundle;
@@ -51,19 +52,19 @@ public class ZoomableTextureView extends TextureView {
     public ZoomableTextureView(Context context) {
         super(context);
         this.context = context;
-        initView();
+        initView(null);
     }
 
     public ZoomableTextureView(final Context context, final AttributeSet attrs) {
         super(context, attrs);
         this.context = context;
-        initView();
+        initView(attrs);
     }
 
     public ZoomableTextureView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         this.context = context;
-        initView();
+        initView(attrs);
     }
 
     @Override
@@ -78,16 +79,27 @@ public class ZoomableTextureView extends TextureView {
 
     @Override
     public void onRestoreInstanceState(Parcelable state) {
-        /////if (state instanceof Bundle) {
-        //    Bundle bundle = (Bundle) state;
-        //    this.minScale = bundle.getInt(MIN_SCALE_KEY);
-        //    this.minScale = bundle.getInt(MAX_SCALE_KEY);
-        //    state = bundle.getParcelable(SUPERSTATE_KEY);
-        //}
+        if (state instanceof Bundle) {
+            Bundle bundle = (Bundle) state;
+            this.minScale = bundle.getInt(MIN_SCALE_KEY);
+            this.minScale = bundle.getInt(MAX_SCALE_KEY);
+            state = bundle.getParcelable(SUPERSTATE_KEY);
+        }
         super.onRestoreInstanceState(state);
     }
 
-    private void initView() {
+    private void initView(AttributeSet attrs) {
+        TypedArray a = context.getTheme().obtainStyledAttributes(
+                attrs,
+                R.styleable.ZoomableTextureView,
+                0, 0);
+        try {
+            minScale = a.getFloat(R.styleable.ZoomableTextureView_minScale, minScale);
+            maxScale = a.getFloat(R.styleable.ZoomableTextureView_maxScale, maxScale);
+        } finally {
+            a.recycle();
+        }
+
         setOnTouchListener(new ZoomOnTouchListeners());
     }
 
