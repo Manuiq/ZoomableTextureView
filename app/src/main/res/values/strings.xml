@@ -6,4 +6,5 @@
     <string name="texture_view">TextureView</string>
     <string name="exoplayer_sample">ExoPlayer sample</string>
     <string name="mediaplayer_sample">MediaPlayer sample</string>
+    <string name="exoplayerview_sample">ExoPlayer with controls sample</string>
 </resources>

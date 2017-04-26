@@ -23,6 +23,9 @@
             android:name=".ExoPlayerActivity"
             android:label="@string/exoplayer_sample" />
         <activity
+            android:name=".ExoPlayerViewActivity"
+            android:label="@string/exoplayerview_sample" />
+        <activity
             android:name=".MediaPlayerActivity"
             android:label="@string/mediaplayer_sample" />
     </application>

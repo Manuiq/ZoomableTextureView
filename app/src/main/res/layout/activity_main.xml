@@ -19,4 +19,12 @@
         android:layout_margin="@dimen/activity_horizontal_margin"
         android:text="@string/exoplayer_sample" />
 
+    <Button
+        android:id="@+id/button_exoplayerview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="@dimen/activity_horizontal_margin"
+        android:text="@string/exoplayerview_sample" />
+
 </LinearLayout>
