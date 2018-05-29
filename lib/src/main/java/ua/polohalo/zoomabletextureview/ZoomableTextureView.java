@@ -6,6 +6,7 @@ import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -22,6 +23,8 @@ public class ZoomableTextureView extends TextureView {
     private float minScale = 1f;
     private float maxScale = 5f;
     private float saveScale = 1f;
+
+    private long lastDownMills;
 
     public void setMinScale(float scale) {
         if (scale < 1.0f || scale > maxScale)
@@ -99,7 +102,7 @@ public class ZoomableTextureView extends TextureView {
         } finally {
             a.recycle();
         }
-
+        
         setOnTouchListener(new ZoomOnTouchListeners());
     }
 
@@ -122,9 +125,15 @@ public class ZoomableTextureView extends TextureView {
 
             switch (motionEvent.getActionMasked()) {
                 case MotionEvent.ACTION_DOWN:
-                    last.set(motionEvent.getX(), motionEvent.getY());
-                    start.set(last);
-                    mode = DRAG;
+                    if (SystemClock.uptimeMillis() < (lastDownMills + 300)) { // Double click in 300ms or less
+                        saveScale = 1.0f;
+                        matrix = new Matrix();
+                    } else {
+                        lastDownMills = SystemClock.uptimeMillis();
+                        last.set(motionEvent.getX(), motionEvent.getY());
+                        start.set(last);
+                        mode = DRAG;
+                    }
                     break;
                 case MotionEvent.ACTION_UP:
                     mode = NONE;
@@ -173,6 +182,9 @@ public class ZoomableTextureView extends TextureView {
                 float mScaleFactor = detector.getScaleFactor();
                 float origScale = saveScale;
                 saveScale *= mScaleFactor;
+                if (minScale < 1.0) {
+                    minScale = 1.0f;
+                }
                 if (saveScale > maxScale) {
                     saveScale = maxScale;
                     mScaleFactor = maxScale / origScale;
@@ -188,18 +200,16 @@ public class ZoomableTextureView extends TextureView {
                         matrix.getValues(m);
                         float x = m[Matrix.MTRANS_X];
                         float y = m[Matrix.MTRANS_Y];
-                        if (mScaleFactor < 1) {
-                            if (0 < getWidth()) {
-                                if (y < -bottom)
-                                    matrix.postTranslate(0, -(y + bottom));
-                                else if (y > 0)
-                                    matrix.postTranslate(0, -y);
-                            } else {
-                                if (x < -right)
-                                    matrix.postTranslate(-(x + right), 0);
-                                else if (x > 0)
-                                    matrix.postTranslate(-x, 0);
-                            }
+                        if (0 < getWidth()) {
+                            if (y < -bottom)
+                                matrix.postTranslate(0, -(y + bottom));
+                            else if (y > 0)
+                                matrix.postTranslate(0, -y);
+                        } else {
+                            if (x < -right)
+                                matrix.postTranslate(-(x + right), 0);
+                            else if (x > 0)
+                                matrix.postTranslate(-x, 0);
                         }
                     }
                 } else {
@@ -222,5 +232,5 @@ public class ZoomableTextureView extends TextureView {
             }
         }
     }
-
+    
 }
