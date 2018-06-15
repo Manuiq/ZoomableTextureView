@@ -14,6 +14,18 @@ def libArtifactId = libArtifactId;
 group = libGroupId
 version = projectVersionName
 
+android {
+    compileSdkVersion 27
+    buildToolsVersion "28.0.0"
+
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 27
+        versionCode 1
+        versionName "1.0.0"
+    }
+}
+
 install {
     repositories.mavenInstaller {
         pom.project {
@@ -37,6 +49,25 @@ install {
     }
 }
 
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+
 bintray {
     user = bintray_user
     key = bintray_apikey
@@ -55,17 +86,5 @@ bintray {
         }
     }
     configurations = ['archives']
-}
-
-android {
-    compileSdkVersion 27
-    buildToolsVersion "28.0.0"
-
-    defaultConfig {
-        minSdkVersion 15
-        targetSdkVersion 27
-        versionCode 1
-        versionName "1.0.0"
-    }
 }
 
