@@ -19,6 +19,8 @@ Just include the custom view in your XML layout:
 
  **app:maxScale="6"** determines that the max zooming factor will be 600%.
 
+Main limitation of this library is the fact that it doesn't properly handle "wrap_content" size so you need to set it manually
+
 In case you want to use it with the new SimpleExoPlayerView instead of ExoPlayer(provides controls out of the box) there is a sample on how to do just that [here.](https://github.com/Manuiq/ZoomableTextureView/blob/master/app/src/main/java/ua/polohalo/zoomabletextureview/sample/ZoomableExoPlayerView.java)
 
 License

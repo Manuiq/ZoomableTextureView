@@ -1,14 +1,71 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'com.github.dcendents.android-maven'
+
+// for Bintray
+def projectVersionCodeNr = Integer.parseInt(projectVersionCode);
+def libGit = libGit;
+def libUrl = libUrl;
+def libDescription = libDescription
+def libGroupId = libGroupId;
+def libArtifactId = libArtifactId;
+
+// for Maven
+group = libGroupId
+version = projectVersionName
+
+install {
+    repositories.mavenInstaller {
+        pom.project {
+            name libArtifactId
+            description libDescription
+            url libUrl
+            inceptionYear '2016'
+
+            packaging 'aar'
+            groupId libGroupId
+            artifactId libArtifactId
+            version projectVersionName
+
+            licenses {
+                license {
+                    name 'MIT'
+                    url libLicenseUrl
+                }
+            }
+        }
+    }
+}
+
+bintray {
+    user = bintray_user
+    key = bintray_apikey
+    pkg {
+        repo = libGroupId
+        name = libArtifactId
+        userOrg = bintray_organisation
+        licenses = ['MIT']
+        vcsUrl = libGit
+        version {
+            name = projectVersionName
+            gpg {
+                sign = true
+                passphrase = bintray_gpg_passphrase
+            }
+        }
+    }
+    configurations = ['archives']
+}
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion 27
+    buildToolsVersion "28.0.0"
 
     defaultConfig {
         minSdkVersion 15
-        targetSdkVersion 25
+        targetSdkVersion 27
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
     }
 }
 

@@ -39,7 +39,7 @@ public class ExoPlayerViewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exoplayerview);
-        exoPlayerView = (ZoomableExoPlayerView) findViewById(R.id.exo_player_view);
+        exoPlayerView = findViewById(R.id.exo_player_view);
 
         //1. creating an ExoPlayer with default parameters from Getting Started guide(https://google.github.io/ExoPlayer/guide.html)
         DefaultBandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();

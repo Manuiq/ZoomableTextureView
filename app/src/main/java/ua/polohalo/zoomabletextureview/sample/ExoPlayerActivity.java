@@ -36,7 +36,7 @@ public class ExoPlayerActivity extends AppCompatActivity implements TextureView.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_textureview);
-        ZoomableTextureView textureView = (ZoomableTextureView) findViewById(R.id.textureView);
+        ZoomableTextureView textureView = findViewById(R.id.textureView);
 
         //1. creating an ExoPlayer with default parameters from Getting Started guide(https://google.github.io/ExoPlayer/guide.html)
         DefaultBandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();

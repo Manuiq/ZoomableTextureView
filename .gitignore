@@ -5,3 +5,5 @@
 /captures
 /.idea
 *.iml
+/.idea/misc.xml
+/lib/lib.iml
