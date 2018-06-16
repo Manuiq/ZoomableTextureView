@@ -8,6 +8,13 @@ Enables pinch to zoom and scroll gestures on video while it's playing. Can be us
 Usage
 -------
 
+Library is distributed via jCenter
+```groovy
+dependencies {
+  implementation 'ua.polohalo.zoomabletextureview:zoomabletextureview:1.0.0'
+}
+```
+
 Just include the custom view in your XML layout:
 ```xml
     <ua.polohalo.zoomabletextureview.ZoomableTextureView
